@@ -15,13 +15,11 @@ morgan.token('body', (request, response) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id'})
     }
     if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: error })
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
