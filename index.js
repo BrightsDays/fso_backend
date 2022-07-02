@@ -14,18 +14,6 @@ morgan.token('body', (request, response) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-const errorHandler = (error, request, response, next) => {
-    if (error.name === 'CastError') {
-        return response.status(400).send({ error: 'malformatted id'})
-    }
-    if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: error.message })
-    }
-
-    next(error)
-}
-app.use(errorHandler)
-
 app.get('/info', (request, response) => {
     Person
         .find({})
@@ -94,6 +82,18 @@ app.delete('/api/persons/:id', (request, response, next) => {
         .then(result => response.status(204).end())
         .catch(error => next(error))
 })
+
+const errorHandler = (error, request, response, next) => {
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id'})
+    }
+    if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
+
+    next(error)
+}
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
